@@ -1,0 +1,24 @@
+language: bash
+services:
+- docker
+env:
+  global:
+  - DEPLOY_USER=travis
+  - MASTER_SERVER=159.89.174.247
+  - MASTER_DOMAIN=ultraselect.me
+  - DEV_SERVER=159.89.174.247
+  - DEV_DOMAIN=dev.ultraselect.me
+  - secure: Yoh4dfjZuG2qFGiS5iqlfwAfKvRsxZpUIWEOzkymN/PCCNHSXKWWT6sqNxWzE8mFa5R96drFsdBiQHOqrycgnQOFCR5xghfC8xW0w/+qBEUkj7p9yxDKScUyhCsIQnL4v2ggOFVeOUjwYuVghDChMnda9eUUsE/WRerHpoJqZgp9Xc1BvmgL9UhBOojH/Hv6K6UcOGYTEXJibSSjhDfRqU/291x7mIJ913XuSwyheMDViBv+JAuB78JXYv4USkV0f5hE6W/ioqSjj54AEJ0UUwQHy+xXHnkE9icBPa3nLPJjGpEGEon0mzHx2ycV+GsAc92AHtHRDOYhJS/hPz6ce31F9RUC3wtzz8fgF9eOQEAqvAuAQWBv/JGTJocXtDQjCZp6mfQIBesR1d5dysxAKwqfLBFPi57RtJO7oRO2pH4zEfe13wLtckZPAWv2mFKvnIs0jOOL6BxPJ2OeUfi81SeTZYbxC9+32loRjJM3xHakx6wZ6QSrPWCNqAVJH79cGZoMFmQTgRyO3IGMbsIoakSO4U9vMEceiCIgM7HlCrmkkNrlEZulkSm3VXFnDboUklYIU3Lj/8mmJPLPQNtV/7quBZGkyit8FMWPjVBS2M/ZwYOMncwaw1QGsNGp14lLfTtEc6ItsxUlVTQjX6P7pJISULnTWl2KoCVJs/DoRqM=
+  - secure: 4b4aZ1+iU4pRvds9OWIaMUoLiAvtvLooe+duzR3RxBG93S8VzTFDNv3D87lNaL52Ok17ELvtmAgrvzAM4cjWNgN9Oah4iveG4wa8c2zepYhqzeAsaA/0NrKSZQfxivdrugf5rurb9gfriX/iAl21wjQ7Rb0DeGwlJRwu5Qq18YL0xRPGz+MD7ukSV1cduraaIqMXOMKw9CokdJz1lNNJLIYy6NKIFZiz7vGM/+1JaKiiKNgbymQvZR7d+hnTt0l//4JavLHRwrmr0GuonysyUf7+qxF6thTOAGCUZZ794HjKLmxXNLD7tYVfXSviC6chc/qTy1DUByAXHLLtLPxW7AKBsWk5zg7zKLZiIdZby+/d5P7p+ojcCgf3TFQsnUete/FAeTE8tVECqQBVKfZvlcI/RMqM/z99Y53+VpZyxLjwkImQLiECtRcwKy/qyHAxR/6U2VWALvRlC0WPWf4plAHgeTDJTgY1ipXDb+eao03wfHPFc8axnaQ3iHmhk31JjdWnxFw70+gxH/JylitAJK0+r8C8Nh3JafiAb9KTT3QVJ3YJm4hl615zYJ6vJjoJ8SMP0M17FvIyAnQkpshdZVRFS67ct1x2RvfaDV8FUeXD7nIZNmfy6j/3F55S3+PqA+yd8rdkVdmiF4E4a/JmdZbkcWQEeUCHL5zxzrqiKis=
+before_install:
+- openssl aes-256-cbc -K $encrypted_7226a3f085d7_key -iv $encrypted_7226a3f085d7_iv
+  -in travis_rsa.enc -out travis_rsa -d
+before_script:
+- "./travis/docker-build.sh"
+script:
+- "./travis/drupal-build.sh"
+after_success:
+- chmod 600 travis_rsa
+- eval 'ssh-agent -s'
+- ssh-add travis_rsa
+- "./travis/deploy.sh"
